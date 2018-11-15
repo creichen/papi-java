@@ -53,8 +53,14 @@ The [PAPI performance counter documentation](https://icl.cs.utk.edu/projects/pap
 
 ## Copyright
 
-Copyright (c) 2014 Charles University in Prague
-Copyright (c) 2014 Vojtech Horky
-Copyright (c) 2018 Christoph Reichenbach
+* Copyright (c) 2014 Charles University in Prague
+* Copyright (c) 2014 Vojtech Horky
+* Copyright (c) 2018 Christoph Reichenbach
 
-##
+## TODO
+
+- Expose more of the PAPI API
+- JavaDoc
+- Turn PAPI events into enum, so we can use `EnumSet.all()` to iterate over all events
+- Make PAPI events self-documenting
+- Use PapiRuntimeExceptions throughout
