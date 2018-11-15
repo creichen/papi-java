@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2014 Charles University in Prague
  * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2018 Christoph Reichenbach
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +37,7 @@
 	" */\n\n" \
 	"package papi;\n" \
 	"\n" \
-	"class Constants {"
+	"public class Constants {"
 
 #define JAVA_FOOTER "}"
 
@@ -46,19 +47,20 @@
 #define PRINT_CONST(name) \
 	printf("\tpublic static final int %s = %d;\n", #name, name);
 
+#define PRINT_CONSTX(name) \
+	printf("\tpublic static final int %s = 0x%x;\n", #name, name);
+
 int main() {
 	printf("%s\n", JAVA_HEADER);
 
-	PRINT_CONST(PAPI_VER_CURRENT);
+	PRINT_CONSTX(PAPI_VER_CURRENT);
 
 	START_GROUP("Error codes");
 	PRINT_CONST(PAPI_OK);
 	PRINT_CONST(PAPI_EINVAL);
 
 	START_GROUP("Preset events");
-	PRINT_CONST(PAPI_TOT_CYC);
-	PRINT_CONST(PAPI_L1_DCM);
-
+#include "events_list.cincl"
 
 	printf("%s\n", JAVA_FOOTER);
 

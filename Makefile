@@ -28,6 +28,10 @@
 #
 
 CC = gcc
+GREP = grep
+AWK = awk
+
+PAPI_EVENTS = /usr/include/papiStdEventDefs.h
 
 CFLAGS = -Wall -Wextra -Werror #-DPAPIJAVA_DEBUG
 CFLAGS_JNI = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -fPIC
@@ -78,6 +82,11 @@ jni/*.c: jni/$(WRAPPER_CLASS_C_HEADER)
 jni/%.o: jni/%.c
 	$(CC) $(CFLAGS) -c -o $@ $(CFLAGS_JNI) $<
 
+jni/genconst.o: jni/events_list.c
+
+jni/events_list.c: ${PAPI_EVENTS}
+	${GREP} -v PAPI_END $< | ${AWK} '/^enum/ { start = 1; }  /#define/ { if (start) printf "\tPRINT_CONSTX(%s);\n", $$2 }' > $@
+
 jni/genconst.bin: jni/genconst.o
 	$(CC) -o $@ $(CFLAGS) -lpapi $< $(LDFLAGS)
 
@@ -91,5 +100,5 @@ run-junit-tests: papi-tests.jar papi.jar libpapijava.so
 clean:
 	rm -f \
 		*.jar src/papi/*.class test/papi/*.class \
-		jni/*.o *.so jni/genconst.bin \
+		jni/*.o *.so jni/genconst.bin jni/events_list.c \
 		jni/papi_Wrapper.h src/papi/Constants.java
