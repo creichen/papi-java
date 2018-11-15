@@ -32,9 +32,9 @@ public class Papi {
 	public static void init() {
 		System.loadLibrary("papi");
 		System.loadLibrary("papijava");
-		
+
 		int ok = Wrapper.initLibrary(Constants.PAPI_VER_CURRENT);
-		
+
 		if (ok != Constants.PAPI_VER_CURRENT) {
 			throw new PapiRuntimeException(ok, "Library initialization failed.");
 		}

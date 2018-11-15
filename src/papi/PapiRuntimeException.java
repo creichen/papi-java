@@ -30,7 +30,7 @@ package papi;
 
 public class PapiRuntimeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
-	
+
 	public PapiRuntimeException(int rc, String reason) {
 		super(reason);
 	}

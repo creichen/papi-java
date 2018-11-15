@@ -30,14 +30,14 @@ package papi;
 
 public class Wrapper {
 	public static native int initLibrary(int version);
-	
+
 	public static native int startCounters(int events[]);
 	public static native int stopCounters(long values[]);
-	
+
 	public static native int eventSetCreate(long eventSetIdOut[]);
 	public static native int eventSetDestroy(long eventSetId);
 	public static native int eventSetAddEvents(long eventSetId, int events[]);
-	
+
 	public static native int eventSetStart(long eventSetId);
 	public static native int eventSetStop(long eventSetId, long values[]);
 }

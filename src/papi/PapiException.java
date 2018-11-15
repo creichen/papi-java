@@ -30,11 +30,11 @@ package papi;
 
 public class PapiException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public PapiException(int rc, String reason) {
 		super(reason);
 	}
-	
+
 	public static void throwOnError(int rc, String reason) throws PapiException {
 		if (rc != Constants.PAPI_OK) {
 			throw new PapiException(rc, reason);
