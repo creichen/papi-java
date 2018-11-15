@@ -29,7 +29,7 @@
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Werror -DPAPIJAVA_DEBUG
+CFLAGS = -Wall -Wextra -Werror #-DPAPIJAVA_DEBUG
 CFLAGS_JNI = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -fPIC
 LDFLAGS = -lpapi
 
