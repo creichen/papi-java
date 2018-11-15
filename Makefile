@@ -1,6 +1,7 @@
 #
 # Copyright (c) 2014 Charles University in Prague
 # Copyright (c) 2014 Vojtech Horky
+# Copyright (c) 2018 Christoph Reichenbach
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,8 +32,6 @@ CC = gcc
 GREP = grep
 AWK = awk
 
-PAPI_EVENTS = /usr/include/papiStdEventDefs.h
-
 CFLAGS = -Wall -Wextra -Werror #-DPAPIJAVA_DEBUG
 CFLAGS_JNI = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -fPIC
 LDFLAGS = -lpapi
@@ -50,7 +49,9 @@ JNI_OBJECTS = jni/highlevel.o jni/eventset.o jni/misc.o
 
 JAVA_JUNIT_TESTS = papi.HighLevelApiTest papi.EventSetApiTest
 
-PAPI_LIBRARY_PATH = ../
+PAPI_PATH ?= ../
+PAPI_LIBRARY_PATH ?= ${PAPI_PATH}
+PAPI_EVENTS ?= ${PAPI_PATH}/include/papiStdEventDefs.h
 
 all: libpapijava.so papi.jar papi-tests.jar
 
@@ -89,6 +90,8 @@ jni/events_list.c: ${PAPI_EVENTS}
 
 jni/genconst.bin: jni/genconst.o
 	$(CC) -o $@ $(CFLAGS) -lpapi $< $(LDFLAGS)
+
+test: run-junit-tests
 
 run-junit-tests: papi-tests.jar papi.jar libpapijava.so
 	$(JAVA) \
