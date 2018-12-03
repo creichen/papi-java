@@ -60,7 +60,7 @@ int main() {
 	PRINT_CONST(PAPI_EINVAL);
 
 	START_GROUP("Preset events");
-#include "events_list.cincl"
+#include "events_list.c"
 
 	printf("%s\n", JAVA_FOOTER);
 
