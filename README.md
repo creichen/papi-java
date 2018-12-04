@@ -21,7 +21,7 @@ PAPI_PATH=/usr/ make
 
 fish:
 ```fish
-set -x /usr/
+set -x PAPI_PATH /usr/
 make
 ```
 
