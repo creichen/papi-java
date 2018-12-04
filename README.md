@@ -14,8 +14,15 @@ This package relies on a pre-existing installation of PAPI on your system.
 
 You can build PAPI as follows:
 
+bash:
 ```bash
 PAPI_PATH=/usr/ make
+```
+
+fish:
+```fish
+set -x /usr/
+make
 ```
 
 where `PAPI_PATH` points to your PAPI installation path (used to find
@@ -27,8 +34,15 @@ code.
 
 Try running the tests:
 
-```
+bash:
+```bash
 PAPI_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/ make test
+```
+
+fish:
+```fish
+set -x PAPI_LIBRARY_PATH /usr/lib/x86_64-linux-gnu/
+make test
 ```
 
 * If this doesn't find the `papi` library, adjust `PAPI_LIBRARY_PATH` to point to the directory that contains `libpapi.so`.
