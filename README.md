@@ -10,6 +10,8 @@ This package requires a Linux kernel with `/proc/sys/kernel/perf_event_paranoid`
 
 ## Building
 
+Make sure that your `JAVA_HOME` is set appropriately (e.g., `/usr/lib/jvm/java-1.8.0-openjdk-arm64`).
+
 You can build PAPI as follows:
 
 ```bash
