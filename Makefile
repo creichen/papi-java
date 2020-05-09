@@ -34,7 +34,7 @@ AWK = awk
 
 CFLAGS = -Wall -Wextra -Werror #-DPAPIJAVA_DEBUG
 CFLAGS_JNI = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -fPIC
-LDFLAGS = -lpapi
+LDFLAGS = 
 
 JAVA = java
 JAVAC = javac
@@ -45,7 +45,7 @@ WRAPPER_CLASS = papi.Wrapper
 WRAPPER_CLASS_JAVA_FILE = papi/Wrapper.java
 WRAPPER_CLASS_C_HEADER = papi_Wrapper.h
 
-JNI_OBJECTS = jni/highlevel.o jni/eventset.o jni/misc.o
+JNI_OBJECTS = jni/perf-events.o jni/highlevel.o jni/eventset.o jni/misc.o
 
 JAVA_JUNIT_TESTS = papi.HighLevelApiTest papi.EventSetApiTest
 
@@ -83,13 +83,8 @@ jni/*.c: jni/$(WRAPPER_CLASS_C_HEADER)
 jni/%.o: jni/%.c
 	$(CC) $(CFLAGS) -c -o $@ $(CFLAGS_JNI) $<
 
-jni/genconst.o: jni/events_list.c
-
-jni/events_list.c: ${PAPI_EVENTS}
-	${GREP} -v PAPI_END $< | ${AWK} '/^enum/ { start = 1; }  /#define/ { if (start) printf "\tPRINT_CONSTX(%s);\n", $$2 }' > $@
-
-jni/genconst.bin: jni/genconst.o
-	$(CC) -o $@ $(CFLAGS) -lpapi $< $(LDFLAGS)
+jni/genconst.bin: jni/perf-events.o jni/genconst.o
+	$(CC) -o $@ $(CFLAGS) -lpapi jni/perf-events.o jni/genconst.o $(LDFLAGS)
 
 test: run-junit-tests
 
@@ -103,5 +98,5 @@ run-junit-tests: papi-tests.jar papi.jar libpapijava.so
 clean:
 	rm -f \
 		*.jar src/papi/*.class test/papi/*.class \
-		jni/*.o *.so jni/genconst.bin jni/events_list.c \
+		jni/*.o *.so jni/genconst.bin \
 		jni/papi_Wrapper.h src/papi/Constants.java

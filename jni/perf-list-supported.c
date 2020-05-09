@@ -25,19 +25,44 @@
     Christoph Reichenbach (CR) <creichen@gmail.com>
 
 ***************************************************************************/
-#include "papi_Wrapper.h"
-#include "papijava.h"
+
+
+#include <stdio.h>
+#include <unistd.h>
 
 #include "perf-events.h"
 
-#include <stdlib.h>
+int count = 0;
 
-JNIEXPORT jint JNICALL Java_papi_Wrapper_initLibrary
-		(JNIEnv UNUSED_ARG(*env), jclass UNUSED_ARG(self), jint versionj) {
-	unsigned int version = (unsigned int) versionj;
-	if (version != PAPI_VER_CURRENT) {
-		return PAPI_EINVAL;
+void
+try_event(unsigned int event_id) {
+	int fd = hwperf_open(event_id);
+	if (fd >= 0) {
+		if (!hwperf_reset(fd) && !hwperf_enable(fd) && !hwperf_disable(fd)) {
+			char namebuf[16];
+			hwperf_event_name(namebuf, event_id);
+			printf("%s\t0x%08x\n", namebuf, event_id);
+			++count;
+		}
+		close(fd);
 	}
+}
 
-	return PAPI_VER_CURRENT;
+int
+main(int argc, char** argv) {
+	for (int i = 0; i < HW_PERF_CLASS_CPU_EVENTS_SIZE; ++i) {
+		try_event(HW_PERF_EVENT(HW_PERF_TY_CPU, i, 0, 0));
+	}
+	for (int cache_id = 0; cache_id < HW_PERF_CLASS_CACHES_SIZE; ++cache_id) {
+		for (int cache_op = 0; cache_op < HW_PERF_CLASS_CACHEOPS_SIZE; ++cache_op) {
+			for (int cache_result = 0; cache_result < HW_PERF_CLASS_CACHERESULTS_SIZE; ++cache_result) {
+				try_event(HW_PERF_EVENT(HW_PERF_TY_CACHE, cache_id, cache_op, cache_result));
+			}
+		}
+	}
+	if (count == 0) {
+		perror("last performance counter read");
+		fprintf(stderr, "No available events.");
+	}
+	return count == 0;
 }

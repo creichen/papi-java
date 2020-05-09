@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2014 Charles University in Prague
  * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2020 Christoph Reichenbach
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,43 +32,51 @@ package papi;
 import java.util.Arrays;
 
 public class EventSet {
-	private long eventId[] = new long[1];
-	private long counters[];
+	private int event;
+	private int fd = -1;
 
 	public static EventSet create(int... events) throws PapiException {
 		EventSet set = new EventSet();
-		set.counters = new long[events.length];
-
-		int rc = Wrapper.eventSetCreate(set.eventId);
-		PapiException.throwOnError(rc, "creating event set");
-
-		rc = Wrapper.eventSetAddEvents(set.eventId[0], events);
-		PapiException.throwOnError(rc, "adding events to the set");
+		if (events.length != 1) {
+			throw new RuntimeException("Only one event permitted for now");
+		}
+		set.event = events[0];
 
 		return set;
 	}
 
-	private EventSet() {
-	}
+	private EventSet() {}
 
 	public void destroy() {
-		int rc = Wrapper.eventSetDestroy(eventId[0]);
-		if (rc != Constants.PAPI_OK) {
-			throw new PapiRuntimeException(rc, "destroying event set");
+		if (this.fd != -1) {
+			int rc = Wrapper.closeFD(this.fd);
+			this.fd = -1;
+			if (rc != Constants.PAPI_OK) {
+				throw new PapiRuntimeException(rc, "destroying FD");
+			}
 		}
 	}
 
 	public void start() throws PapiException {
-		int rc = Wrapper.eventSetStart(eventId[0]);
+		if (this.fd == -1) {
+			this.fd = Wrapper.setupFD(this.event);
+			if (this.fd < 0) {
+				throw new PapiException(-1, "allocating file descriptor");
+			}
+		}
+		int rc = Wrapper.startCounter(this.fd);
 		PapiException.throwOnError(rc, "starting event set");
 	}
 
 	public void stop() throws PapiException {
-		int rc = Wrapper.eventSetStop(eventId[0], counters);
+		int rc = Wrapper.stopCounter(this.fd);
 		PapiException.throwOnError(rc, "stopping events");
 	}
 
 	public long[] getCounters() {
-		return Arrays.copyOf(counters, counters.length);
+		long[] result = new long[1];
+		int rc = Wrapper.readCounter(this.fd, result);
+		PapiException.throwOnError(rc, "reading events");
+		return result;
 	}
 }

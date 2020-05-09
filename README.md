@@ -1,52 +1,34 @@
-# PAPI for Java
+# Pseudo-PAPI for Java
 
-This package is an update to Vojtech Horky's PAPI for Java bindings.
-PAPI provides access to the CPU's hardware performance counters, which
-are special CPU features that allow the CPU to measure low-level
-events.  See [the PAPI homepage](https://icl.utk.edu/papi/index.html)
-for more details.
+This package is an alternative to Vojtech Horky's PAPI for Java bindings.
 
 ## Dependencies
 
-This package relies on a pre-existing installation of PAPI on your system.
+This package requires a Linux kernel with `/proc/sys/kernel/perf_event_paranoid` set suitably low, e.g.,
+```echo -1 > /proc/sys/kernel/perf_event_paranoid
+```
 
 ## Building
 
 You can build PAPI as follows:
 
-bash:
 ```bash
-PAPI_PATH=/usr/ make
-```
-
-fish:
-```fish
-set -x PAPI_PATH /usr/
 make
 ```
 
-where `PAPI_PATH` points to your PAPI installation path (used to find
-the PAPI includes).  Note that the Makefile will execute C code to
-query PAPI for some values that are then transformed into Java source
-code.
+Note that the Makefile will execute C code to query your system's
+performance counter kernel API for values that are then transformed
+into Java source code.
 
 ## Running
 
 Try running the tests:
 
-bash:
 ```bash
-PAPI_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/ make test
-```
-
-fish:
-```fish
-set -x PAPI_LIBRARY_PATH /usr/lib/x86_64-linux-gnu/
 make test
 ```
 
-* If this doesn't find the `papi` library, adjust `PAPI_LIBRARY_PATH` to point to the directory that contains `libpapi.so`.
-* If you get failures with error code -25, try setting `/proc/sys/kernel/perf_event_paranoid` to a lower value (such as 0).
+* If you get failures, try setting `/proc/sys/kernel/perf_event_paranoid` to a lower value (such as -1).
 
 ## API
 
@@ -69,7 +51,7 @@ The [PAPI performance counter documentation](https://icl.cs.utk.edu/projects/pap
 
 * Copyright (c) 2014 Charles University in Prague
 * Copyright (c) 2014 Vojtech Horky
-* Copyright (c) 2018 Christoph Reichenbach
+* Copyright (c) 2018--2020 Christoph Reichenbach
 
 ## TODO
 
@@ -78,3 +60,4 @@ The [PAPI performance counter documentation](https://icl.cs.utk.edu/projects/pap
 - Turn PAPI events into enum, so we can use `EnumSet.all()` to iterate over all events
 - Make PAPI events self-documenting
 - Use PapiRuntimeExceptions throughout
+- Allow event sets with multiple events again

@@ -40,12 +40,15 @@ public class HighLevelApiTest {
 	}
 
 	@Test
-	public void impossibleToStartNullEvents() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.startCounters(null));
-	}
-	
-	@Test
-	public void impossibleToStartNoEvents() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.startCounters(new int[0]));
+	public void minimal() {
+		EventSet ev = EventSet.create(Constants.CYCLES);
+		ev.start();
+		System.out.println("blah");
+		String s = ev.toString(); // do something
+		ev.stop();
+		System.err.println("counter = " + (ev.getCounters()[0]));
+		assertTrue(ev.getCounters()[0] > 0l);
+		assertNotNull(s);
+		ev.destroy();
 	}
 }

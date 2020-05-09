@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2014 Charles University in Prague
  * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2020 Christoph Reichenbach
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +32,9 @@ package papi;
 public class Wrapper {
 	public static native int initLibrary(int version);
 
-	public static native int startCounters(int events[]);
-	public static native int stopCounters(long values[]);
-
-	public static native int eventSetCreate(long eventSetIdOut[]);
-	public static native int eventSetDestroy(long eventSetId);
-	public static native int eventSetAddEvents(long eventSetId, int events[]);
-
-	public static native int eventSetStart(long eventSetId);
-	public static native int eventSetStop(long eventSetId, long values[]);
+	public static native int setupFD(int event);
+	public static native int closeFD(int fd);
+	public static native int startCounter(int fd);
+	public static native int stopCounter(int fd);
+	public static native int readCounter(int fd, long value[]);
 }

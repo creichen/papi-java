@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Christoph Reichenbach
+ * Copyright (c) 2018-2020 Christoph Reichenbach
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ public class Demo {
     public static void main(String[] args) throws PapiException {
 	Papi.init();
 
-	EventSet evset = EventSet.create(Constants.PAPI_TOT_CYC, Constants.PAPI_L1_DCM);
+	EventSet evset = EventSet.create(Constants.CYCLES);
 
 	int[] results = new int[10];
 
@@ -54,7 +54,7 @@ public class Demo {
 
 		// only print the 10th run
 		if (warmup == 0) {
-		    System.out.println("#" + i + ":\t" + data[0] + "\t" + data[1]);
+		    System.out.println("#" + i + ":\t" + data[0]);
 		}
 	    }
 	}
