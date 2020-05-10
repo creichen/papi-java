@@ -43,7 +43,6 @@ public class HighLevelApiTest {
 	public void minimal() {
 		EventSet ev = EventSet.create(Constants.CYCLES);
 		ev.start();
-		System.out.println("blah");
 		String s = ev.toString(); // do something
 		ev.stop();
 		System.err.println("counter = " + (ev.getCounters()[0]));

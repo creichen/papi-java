@@ -44,7 +44,6 @@ JNIEXPORT jint JNICALL Java_papi_Wrapper_readCounter
 	}
 
 	long long count = hwperf_read((int) fd);
-	fprintf(stderr, "read result: %lld\n", count);
 
 	jlong *valuesj = (*env)->GetLongArrayElements(env, valuesarr, NULL);
 	valuesj[0] = (jlong) count;
