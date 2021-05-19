@@ -45,12 +45,12 @@ WRAPPER_CLASS = papi.Wrapper
 WRAPPER_CLASS_JAVA_FILE = papi/Wrapper.java
 WRAPPER_CLASS_C_HEADER = papi_Wrapper.h
 
-JNI_OBJECTS = jni/highlevel.o jni/eventset.o jni/misc.o
+JNI_OBJECTS = jni/eventset.o jni/misc.o
 
-JAVA_JUNIT_TESTS = papi.HighLevelApiTest papi.EventSetApiTest
+JAVA_JUNIT_TESTS = papi.EventSetApiTest
 
-PAPI_PATH ?= ../
-PAPI_LIBRARY_PATH ?= ${PAPI_PATH}
+PAPI_PATH = %papi_path%
+PAPI_LIBRARY_PATH = %papi_library_path%
 PAPI_EVENTS ?= ${PAPI_PATH}/include/papiStdEventDefs.h
 
 all: libpapijava.so papi.jar papi-tests.jar
