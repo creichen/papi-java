@@ -6,9 +6,17 @@ are special CPU features that allow the CPU to measure low-level
 events.  See [the PAPI homepage](https://icl.utk.edu/papi/index.html)
 for more details.
 
+## News
+- JDK 9 and later supported out of the box
+- PAPI 6 supported (by removing `papi.Wrapper.startCounters()` and `papi.Wrapper.stopCounters()`; use the EventSet API instead.)
+
 ## Dependencies
 
-This package relies on a pre-existing installation of PAPI on your system.
+This package relies on:
+- bash, GNU make, C/C++ build environment
+- JDK 8 or later (tested with 8 and 11)
+- Pre-existing PAPI installation on your system (PAPI 5 or 6 supported)
+- user access to PAPI, e.g. by setting `/proc/sys/kernel/perf_event_paranoid` on Linux
 
 ## Building
 
@@ -16,43 +24,51 @@ You can build PAPI as follows:
 
 bash:
 ```bash
-PAPI_PATH=/usr/ ./configure
-make
+./configure && make
 ```
 
 fish:
 ```fish
-set -x PAPI_PATH /usr/
-./configure
-make
+./configure && make
 ```
 
-where `PAPI_PATH` points to your PAPI installation path (used to find
-the PAPI includes).  Note that the Makefile will execute C code to
-query PAPI for some values that are then transformed into Java source
-code.
-
-Other configuration options:
+The configuration script should auto-detect all relevant settings.  Otherwise you override by setting:
+- `PAPI_PATH`: path under which we can find the `include` directory containing the PAPI headers (e.g., `/usr/`)
+- `PAPI_LIBRARY_PATH`: path that contains `libpapi.so`
 - `JAVAC`: which `javac` to use
 - `JAVAH`: which JNI code generator to use: `javah` for JDK8, or `javac` for JDK 9 and later.
 
 ## Running
 
-Try running the tests:
+Try running the test:
 
-bash:
-```bash
-PAPI_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/ make test
 ```
-
-fish:
-```fish
-set -x PAPI_LIBRARY_PATH /usr/lib/x86_64-linux-gnu/
 make test
 ```
 
-* If this doesn't find the `papi` library, adjust `PAPI_LIBRARY_PATH` to point to the directory that contains `libpapi.so`.
+## Troubleshooting
+
+* If `make test` doesn't find the `papi` library, adjust `PAPI_LIBRARY_PATH` to point to the directory that contains `libpapi.so`.
 * If you get failures with error code -25, try setting `/proc/sys/kernel/perf_event_paranoid` to a lower value (such as 0).
+* Migration: if you used an older version of this library and noticed that `papi.Wrapper.startCounters()` and `papi.Wrapper.stopCounters()` are missing: please migrate as follows:
+
+```
+papi.Wrapper.startCounters(COUNTERS);
+...
+papi.Wrapper.stopCounters(OUT);
+```
+
+should become
+
+```
+// if you were checking return codes before: the EventSet uses exceptions instead
+EventSet s = papi.EventSet.create(COUNTERS);
+s.start();
+...
+s.stop();
+OUT = s.getCounters();
+```
+
 
 ## API
 
@@ -75,7 +91,7 @@ The [PAPI performance counter documentation](https://icl.cs.utk.edu/projects/pap
 
 * Copyright (c) 2014 Charles University in Prague
 * Copyright (c) 2014 Vojtech Horky
-* Copyright (c) 2018 Christoph Reichenbach
+* Copyright (c) 2018-2021 Christoph Reichenbach
 
 ## TODO
 
