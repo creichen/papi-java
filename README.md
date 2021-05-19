@@ -16,12 +16,14 @@ You can build PAPI as follows:
 
 bash:
 ```bash
-PAPI_PATH=/usr/ make
+PAPI_PATH=/usr/ ./configure
+make
 ```
 
 fish:
 ```fish
 set -x PAPI_PATH /usr/
+./configure
 make
 ```
 
@@ -29,6 +31,10 @@ where `PAPI_PATH` points to your PAPI installation path (used to find
 the PAPI includes).  Note that the Makefile will execute C code to
 query PAPI for some values that are then transformed into Java source
 code.
+
+Other configuration options:
+- `JAVAC`: which `javac` to use
+- `JAVAH`: which JNI code generator to use: `javah` for JDK8, or `javac` for JDK 9 and later.
 
 ## Running
 
