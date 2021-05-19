@@ -1,0 +1,38 @@
+#! /bin/bash
+
+echo "Checking for javac (set JAVAC to override)..."
+if [[ ${JAVAC} != "" ]]; then
+    echo "- user override: using ${JAVAC}"
+else
+    JAVAC='javac'
+    echo "- using javac from PATH, version: ${VERSION}"
+fi
+
+VERSION=`${JAVAC} -version 2>&1` || { echo 'Error: "javac -version" failed' ; exit 1; }
+
+echo "Checking for javah (set JAVAH to override, options are 'javah' and 'javac')..."
+if [[ ${JAVAH} != "" ]]; then
+    echo "- user override: using ${JAVAH}"
+else
+    echo ${VERSION}
+    if [[ ${VERSION} == "javac 1.8."* ]]; then
+	JAVAH='javah'
+    elif [[ ${VERSION} == "javac 1."* ]]; then
+	echo "Version ${VERSION} is not supported, must be Java 8 or later"
+	exit 1
+    else
+	JAVAH='javac'
+    fi
+    echo "- using ${JAVAH}"
+fi
+
+JAVAH=`echo ${JAVAH} | sed 's/\//\\\\\//g'`
+JAVAC=`echo ${JAVAC} | sed 's/\//\\\\\//g'`
+echo "$JAVAC"
+
+cat Makefile.template \
+    | sed s/%javah%/"${JAVAH}"/ \
+    | sed s/%javac%/"${JAVAC}"/ \
+    | cat > Makefile
+echo "Run 'make' to build"
+
