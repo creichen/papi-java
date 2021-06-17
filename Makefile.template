@@ -37,20 +37,20 @@ CFLAGS_JNI = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -fPIC
 LDFLAGS = -lpapi
 
 JAVA = java
-JAVAC = javac
-JAVAH = javah
+JAVAC = %javac%
+JAVAH = %javah%
 JAR = jar
 
 WRAPPER_CLASS = papi.Wrapper
 WRAPPER_CLASS_JAVA_FILE = papi/Wrapper.java
 WRAPPER_CLASS_C_HEADER = papi_Wrapper.h
 
-JNI_OBJECTS = jni/highlevel.o jni/eventset.o jni/misc.o
+JNI_OBJECTS = jni/eventset.o jni/misc.o
 
-JAVA_JUNIT_TESTS = papi.HighLevelApiTest papi.EventSetApiTest
+JAVA_JUNIT_TESTS = papi.EventSetApiTest
 
-PAPI_PATH ?= ../
-PAPI_LIBRARY_PATH ?= ${PAPI_PATH}
+PAPI_PATH = %papi_path%
+PAPI_LIBRARY_PATH = %papi_library_path%
 PAPI_EVENTS ?= ${PAPI_PATH}/include/papiStdEventDefs.h
 
 all: libpapijava.so papi.jar papi-tests.jar
@@ -76,7 +76,11 @@ src/papi/Constants.java: jni/genconst.bin
 	./jni/genconst.bin >$@
 
 jni/$(WRAPPER_CLASS_C_HEADER): src/$(WRAPPER_CLASS_JAVA_FILE)
+ifeq (${JAVAH},javah)
 	$(JAVAH) -cp src/ -d jni/ $(WRAPPER_CLASS)
+else
+	$(JAVAC) -cp src/ src/$(WRAPPER_CLASS_JAVA_FILE) -h jni/
+endif
 
 jni/*.c: jni/$(WRAPPER_CLASS_C_HEADER)
 
