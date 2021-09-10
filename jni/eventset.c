@@ -35,105 +35,109 @@
 
 JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetCreate
 		(JNIEnv *env, jclass UNUSED_ARG(self), jlongArray eventsetidoutarr) {
-	if (eventsetidoutarr == NULL) {
-		return PAPI_EINVAL;
-	}
+	/* if (eventsetidoutarr == NULL) { */
+	/* 	return PAPI_EINVAL; */
+	/* } */
 
-	if ((*env)->GetArrayLength(env, eventsetidoutarr) != 1) {
-		return PAPI_EINVAL;
-	}
+	/* if ((*env)->GetArrayLength(env, eventsetidoutarr) != 1) { */
+	/* 	return PAPI_EINVAL; */
+	/* } */
 
-	int eventset = PAPI_NULL;
-	int rc = PAPI_create_eventset(&eventset);
-	if (rc != PAPI_OK) {
-		return rc;
-	}
+	/* int eventset = PAPI_NULL; */
+	/* int rc = PAPI_create_eventset(&eventset); */
+	/* if (rc != PAPI_OK) { */
+	/* 	return rc; */
+	/* } */
 
-	jlong *eventsetidoutj = (*env)->GetLongArrayElements(env, eventsetidoutarr, NULL);
-	long long *eventsetidout = (long long *) eventsetidoutj;
-	eventsetidout[0] = eventset;
-	(*env)->ReleaseLongArrayElements(env, eventsetidoutarr, eventsetidoutj, JNI_COMMIT);
+	/* jlong *eventsetidoutj = (*env)->GetLongArrayElements(env, eventsetidoutarr, NULL); */
+	/* long long *eventsetidout = (long long *) eventsetidoutj; */
+	/* eventsetidout[0] = eventset; */
+	/* (*env)->ReleaseLongArrayElements(env, eventsetidoutarr, eventsetidoutj, JNI_COMMIT); */
 
-	DEBUG_PRINT("new eventset is %d", eventset);
+	/* DEBUG_PRINT("new eventset is %d", eventset); */
 
 	return PAPI_OK;
 }
 
 JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetDestroy
 		(JNIEnv UNUSED_ARG(*env), jclass UNUSED_ARG(self), jlong eventsetid) {
-	int eventset = (int) eventsetid;
+/* 	int eventset = (int) eventsetid; */
 
-	DEBUG_PRINT("cleanig-up the event set %d first", eventset);
-	int rc = PAPI_cleanup_eventset(eventset);
-	if (rc != PAPI_OK) {
-		goto leave;
-	}
+/* 	DEBUG_PRINT("cleanig-up the event set %d first", eventset); */
+/* 	int rc = PAPI_cleanup_eventset(eventset); */
+/* 	if (rc != PAPI_OK) { */
+/* 		goto leave; */
+/* 	} */
 
-	DEBUG_PRINT("destroying %d", eventset);
-	rc = PAPI_destroy_eventset(&eventset);
+/* 	DEBUG_PRINT("destroying %d", eventset); */
+/* 	rc = PAPI_destroy_eventset(&eventset); */
 
-leave:
-	DEBUG_PRINT("returning %d (%s)", rc, PAPI_strerror(rc));
-	return rc;
+/* leave: */
+/* 	DEBUG_PRINT("returning %d (%s)", rc, PAPI_strerror(rc)); */
+/* 	return rc; */
+	return 0;
 }
 
 JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetAddEvents
 		(JNIEnv *env, jclass UNUSED_ARG(self), jlong eventsetid, jintArray eventsarr) {
-	DEBUG_PRINT("enter");
-	if (eventsarr == NULL) {
-		DEBUG_PRINT("events array is NULL!");
-		return PAPI_EINVAL;
-	}
+	/* DEBUG_PRINT("enter"); */
+	/* if (eventsarr == NULL) { */
+	/* 	DEBUG_PRINT("events array is NULL!"); */
+	/* 	return PAPI_EINVAL; */
+	/* } */
 
-	int events_count = (*env)->GetArrayLength(env, eventsarr);
-	if (events_count == 0) {
-		return PAPI_OK;
-	}
+	/* int events_count = (*env)->GetArrayLength(env, eventsarr); */
+	/* if (events_count == 0) { */
+	/* 	return PAPI_OK; */
+	/* } */
 
-	int eventset = (int) eventsetid;
-	DEBUG_PRINT("eventset is %d", eventset);
+	/* int eventset = (int) eventsetid; */
+	/* DEBUG_PRINT("eventset is %d", eventset); */
 
-	jint *eventsj = (*env)->GetIntArrayElements(env, eventsarr, NULL);
-	int *events = (int *) eventsj;
-	int rc = PAPI_add_events(eventset, events, events_count);
-	(*env)->ReleaseIntArrayElements(env, eventsarr, eventsj, JNI_ABORT);
+	/* jint *eventsj = (*env)->GetIntArrayElements(env, eventsarr, NULL); */
+	/* int *events = (int *) eventsj; */
+	/* int rc = PAPI_add_events(eventset, events, events_count); */
+	/* (*env)->ReleaseIntArrayElements(env, eventsarr, eventsj, JNI_ABORT); */
 
-	DEBUG_PRINT("returning %d (%s)", rc, PAPI_strerror(rc));
+	/* DEBUG_PRINT("returning %d (%s)", rc, PAPI_strerror(rc)); */
 
-	return rc;
+	/* return rc; */
+	return 0;
 }
 
 JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetStart
 		(JNIEnv UNUSED_ARG(*env), jclass UNUSED_ARG(self), jlong eventsetid) {
-	int eventset = (int) eventsetid;
-	return PAPI_start(eventset);
+	/* int eventset = (int) eventsetid; */
+	/* return PAPI_start(eventset); */
+	return 0;
 }
 
 JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetStop
 		(JNIEnv *env, jclass UNUSED_ARG(self), jlong eventsetid, jlongArray valuesarr) {
-	if (valuesarr == NULL) {
-		return PAPI_EINVAL;
-	}
+	/* if (valuesarr == NULL) { */
+	/* 	return PAPI_EINVAL; */
+	/* } */
 
-	int values_count = (*env)->GetArrayLength(env, valuesarr);
-	if (values_count == 0) {
-		return PAPI_EINVAL;
-	}
+	/* int values_count = (*env)->GetArrayLength(env, valuesarr); */
+	/* if (values_count == 0) { */
+	/* 	return PAPI_EINVAL; */
+	/* } */
 
-	int eventset = (int) eventsetid;
+	/* int eventset = (int) eventsetid; */
 
-	jlong *valuesj = (*env)->GetLongArrayElements(env, valuesarr, NULL);
-	long long *values = (long long *) valuesj;
+	/* jlong *valuesj = (*env)->GetLongArrayElements(env, valuesarr, NULL); */
+	/* long long *values = (long long *) valuesj; */
 
-	int rc = PAPI_stop(eventset, values);
+	/* int rc = PAPI_stop(eventset, values); */
 
-	if (rc == PAPI_OK) {
-		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_COMMIT);
-	} else {
-		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_ABORT);
-	}
+	/* if (rc == PAPI_OK) { */
+	/* 	(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_COMMIT); */
+	/* } else { */
+	/* 	(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_ABORT); */
+	/* } */
 
-	DEBUG_PRINT("returning %d (%s)", rc, PAPI_strerror(rc));
+	/* DEBUG_PRINT("returning %d (%s)", rc, PAPI_strerror(rc)); */
 
-	return rc;
+	/* return rc; */
+	return 0;
 }
