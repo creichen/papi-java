@@ -34,23 +34,59 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class EventSetApiTest {
-	@BeforeClass
-	public static void initialization() {
-		Papi.init();
-	}
+        @BeforeClass
+        public static void initialization() {
+                Papi.init();
+        }
 
-	@Test
-	public void nullArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
-	}
-	
-	@Test
-	public void emptyArrayArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
-	}
-	
-	@Test
-	public void tooBigArrayArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
-	}
+        @Test
+        public void nullArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
+        }
+
+        @Test
+        public void emptyArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
+        }
+
+        @Test
+        public void tooBigArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
+        }
+
+        @Test
+        public void testReset() {
+                EventSet ev = EventSet.create(Constants.PAPI_TOT_CYC);
+                ev.start();
+                ev.stop();
+                ev.reset();
+                ev.start();
+                ev.stop();
+        }
+
+        @Test
+        public void testTimeSpentCounting() {
+                int iterations = (int) 1e6;
+
+                EventSet ev = EventSet.create(Constants.PAPI_TOT_CYC);
+
+                long[] counterValues = new long[iterations];
+
+                for (int i = 0; i < iterations; ++i) {
+                        ev.reset();
+                        ev.start();
+                        ev.stop();
+
+                        long[] readings = ev.getCounters();
+                        counterValues[i] = readings[0];
+                }
+
+                // We compute the average.
+                long sum = 0;
+                for (int i = 0; i < iterations; ++i) {
+                        sum += counterValues[i];
+                }
+
+                assertEquals(400.0, (float) sum / iterations, 100.0);
+        }
 }

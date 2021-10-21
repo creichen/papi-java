@@ -20,6 +20,8 @@ This package relies on:
 
 ## Building
 
+You need to set the `JAVA_HOME` variable first, to the directory from which `include/jni.h` can be found.
+
 You can build PAPI as follows:
 
 bash:
