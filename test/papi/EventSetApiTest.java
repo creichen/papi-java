@@ -34,23 +34,33 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class EventSetApiTest {
-	@BeforeClass
-	public static void initialization() {
-		Papi.init();
-	}
+        @BeforeClass
+        public static void initialization() {
+                Papi.init();
+        }
 
-	@Test
-	public void nullArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
-	}
-	
-	@Test
-	public void emptyArrayArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
-	}
-	
-	@Test
-	public void tooBigArrayArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
-	}
+        @Test
+        public void nullArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
+        }
+
+        @Test
+        public void emptyArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
+        }
+
+        @Test
+        public void tooBigArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
+        }
+
+        @Test
+        public void testReset() {
+                EventSet ev = EventSet.create(Constants.PAPI_TOT_CYC);
+                ev.start();
+                ev.stop();
+                ev.reset();
+                ev.start();
+                ev.stop();
+        }
 }

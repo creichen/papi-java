@@ -31,43 +31,48 @@ package papi;
 import java.util.Arrays;
 
 public class EventSet {
-	private long eventId[] = new long[1];
-	private long counters[];
+        private long eventId[] = new long[1];
+        private long counters[];
 
-	public static EventSet create(int... events) throws PapiException {
-		EventSet set = new EventSet();
-		set.counters = new long[events.length];
+        public static EventSet create(int... events) throws PapiException {
+                EventSet set = new EventSet();
+                set.counters = new long[events.length];
 
-		int rc = Wrapper.eventSetCreate(set.eventId);
-		PapiException.throwOnError(rc, "creating event set");
+                int rc = Wrapper.eventSetCreate(set.eventId);
+                PapiException.throwOnError(rc, "creating event set");
 
-		rc = Wrapper.eventSetAddEvents(set.eventId[0], events);
-		PapiException.throwOnError(rc, "adding events to the set");
+                rc = Wrapper.eventSetAddEvents(set.eventId[0], events);
+                PapiException.throwOnError(rc, "adding events to the set");
 
-		return set;
-	}
+                return set;
+        }
 
-	private EventSet() {
-	}
+        private EventSet() {
+        }
 
-	public void destroy() {
-		int rc = Wrapper.eventSetDestroy(eventId[0]);
-		if (rc != Constants.PAPI_OK) {
-			throw new PapiRuntimeException(rc, "destroying event set");
-		}
-	}
+        public void destroy() {
+                int rc = Wrapper.eventSetDestroy(eventId[0]);
+                if (rc != Constants.PAPI_OK) {
+                        throw new PapiRuntimeException(rc, "destroying event set");
+                }
+        }
 
-	public void start() throws PapiException {
-		int rc = Wrapper.eventSetStart(eventId[0]);
-		PapiException.throwOnError(rc, "starting event set");
-	}
+        public void start() throws PapiException {
+                int rc = Wrapper.eventSetStart(eventId[0]);
+                PapiException.throwOnError(rc, "starting event set");
+        }
 
-	public void stop() throws PapiException {
-		int rc = Wrapper.eventSetStop(eventId[0], counters);
-		PapiException.throwOnError(rc, "stopping events");
-	}
+        public void stop() throws PapiException {
+                int rc = Wrapper.eventSetStop(eventId[0], counters);
+                PapiException.throwOnError(rc, "stopping events");
+        }
 
-	public long[] getCounters() {
-		return Arrays.copyOf(counters, counters.length);
-	}
+        public void reset() throws PapiException {
+                int rc = Wrapper.eventSetReset(eventId[0]);
+                PapiException.throwOnError(rc, "resetting event set");
+        }
+
+        public long[] getCounters() {
+                return Arrays.copyOf(counters, counters.length);
+        }
 }
