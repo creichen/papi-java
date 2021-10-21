@@ -63,4 +63,30 @@ public class EventSetApiTest {
                 ev.start();
                 ev.stop();
         }
+
+        @Test
+        public void testTimeSpentCounting() {
+                int iterations = (int) 1e6;
+
+                EventSet ev = EventSet.create(Constants.PAPI_TOT_CYC);
+
+                long[] counterValues = new long[iterations];
+
+                for (int i = 0; i < iterations; ++i) {
+                        ev.reset();
+                        ev.start();
+                        ev.stop();
+
+                        long[] readings = ev.getCounters();
+                        counterValues[i] = readings[0];
+                }
+
+                // We compute the average.
+                long sum = 0;
+                for (int i = 0; i < iterations; ++i) {
+                        sum += counterValues[i];
+                }
+
+                assertEquals(400.0, (float) sum / iterations, 100.0);
+        }
 }
