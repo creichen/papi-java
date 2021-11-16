@@ -75,4 +75,9 @@ public class EventSet {
         public long[] getCounters() {
                 return Arrays.copyOf(counters, counters.length);
         }
+
+        @Override
+        protected void finalize() {
+                destroy();
+        }
 }
