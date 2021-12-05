@@ -52,6 +52,7 @@ JAVA_JUNIT_TESTS = papi.EventSetApiTest
 PAPI_PATH = %papi_path%
 PAPI_LIBRARY_PATH = %papi_library_path%
 PAPI_EVENTS ?= ${PAPI_PATH}/include/papiStdEventDefs.h
+PAPI_H ?= ${PAPI_PATH}/include/papi.h
 
 all: libpapijava.so papi.jar papi-tests.jar
 
@@ -87,10 +88,13 @@ jni/*.c: jni/$(WRAPPER_CLASS_C_HEADER)
 jni/%.o: jni/%.c
 	$(CC) $(CFLAGS) -c -o $@ $(CFLAGS_JNI) $<
 
-jni/genconst.o: jni/events_list.c
+jni/genconst.o: jni/events_list.c jni/errors_list.c
 
 jni/events_list.c: ${PAPI_EVENTS}
-	${GREP} -v PAPI_END $< | ${AWK} '/^enum/ { start = 1; }  /#define/ { if (start) printf "\tPRINT_CONSTX(%s);\n", $$2 }' > $@
+	${GREP} -v PAPI_END $< | ${AWK} '/^enum/ { start = 1; }  /#define/ { if (start) printf "\tPRINT_EVENT(%s);\n", $$2 }' > $@
+
+jni/errors_list.c: ${PAPI_H}
+	cat $< | ${AWK} '/PAPI_OK/ { start = 1; }  /PAPI_NUM_ERRORS/ {start=0} /#define/ { if (start) { n = $$2; s=$$5; for (i = 6; i < NF; ++i) {s = s " " $$i}; printf "\tPRINT_ERROR(%s, \"%s\");\n", n, s} }' > $@
 
 jni/genconst.bin: jni/genconst.o
 	$(CC) -o $@ $(CFLAGS) -lpapi $< $(LDFLAGS)

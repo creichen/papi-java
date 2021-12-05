@@ -32,7 +32,7 @@ public class PapiException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public PapiException(int rc, String reason) {
-		super(reason);
+		super(reason + " [error code = " + rc + "]");
 	}
 
 	public static void throwOnError(int rc, String reason) throws PapiException {

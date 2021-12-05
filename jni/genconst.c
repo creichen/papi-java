@@ -37,7 +37,9 @@
 	" */\n\n" \
 	"package papi;\n" \
 	"\n" \
-	"public class Constants {"
+	"public class Constants {\n" \
+	"\tpublic static final java.util.Map<Integer, String> ERRORS = new java.util.HashMap<>();\n" \
+	"\tpublic static final java.util.Map<String, Integer> EVENTS = new java.util.HashMap<>();\n"
 
 #define JAVA_FOOTER "}"
 
@@ -47,8 +49,17 @@
 #define PRINT_CONST(name) \
 	printf("\tpublic static final int %s = %d;\n", #name, name);
 
+#define PRINT_CONST2(name, _)						\
+	printf("\tpublic static final int %s = %d;\n", #name, name);
+
 #define PRINT_CONSTX(name) \
 	printf("\tpublic static final int %s = 0x%x;\n", #name, name);
+
+#define PRINT_ERROR_DESCRIPTION(name, description)					\
+	printf("\t\tERRORS.put(%s, \"%s\");\n", #name, description);
+
+#define PRINT_EVENT_MAPPING(name) \
+	printf("\t\tEVENTS.put(\"%s\", %s);\n", #name, #name);
 
 int main() {
 	printf("%s\n", JAVA_HEADER);
@@ -56,11 +67,29 @@ int main() {
 	PRINT_CONSTX(PAPI_VER_CURRENT);
 
 	START_GROUP("Error codes");
-	PRINT_CONST(PAPI_OK);
-	PRINT_CONST(PAPI_EINVAL);
+#define PRINT_ERROR PRINT_CONST2
+#include "errors_list.c"
+#undef PRINT_ERROR
 
 	START_GROUP("Preset events");
+#define PRINT_EVENT PRINT_CONSTX
 #include "events_list.c"
+#undef PRINT_EVENT
+
+	START_GROUP("Error code descriptions");
+	printf("\tstatic {\n");
+#define PRINT_ERROR PRINT_ERROR_DESCRIPTION
+#include "errors_list.c"
+#undef PRINT_ERROR
+	printf("\t}\n");
+
+	START_GROUP("Event names map");
+	printf("\tstatic {\n");
+#define PRINT_EVENT PRINT_EVENT_MAPPING
+#include "events_list.c"
+#undef PRINT_ERROR
+	printf("\t}\n");
+
 
 	printf("%s\n", JAVA_FOOTER);
 
