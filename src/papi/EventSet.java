@@ -70,4 +70,18 @@ public class EventSet {
 	public long[] getCounters() {
 		return Arrays.copyOf(counters, counters.length);
 	}
+
+	public long getCounter(int index) {
+		return this.counters[index];
+	}
+
+	public int size() {
+		return this.counters.length;
+	}
+
+	public void addCountersTo(long[] dest) {
+		for (int i = 0; i < this.counters.length; ++i) {
+			dest[i] += this.counters[i];
+		}
+	}
 }
