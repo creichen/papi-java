@@ -31,18 +31,20 @@ package papi;
 import java.util.Arrays;
 
 public class EventSet {
-	private long eventId[] = new long[1];
-	private long counters[];
+	private long eventSetId = 0;
+	private int events_nr;
 
 	public static EventSet create(int... events) throws PapiException {
 		EventSet set = new EventSet();
-		set.counters = new long[events.length];
+		set.events_nr = events.length;
 
-		int rc = Wrapper.eventSetCreate(set.eventId);
+		long id[] = new long[1];
+		int rc = Wrapper.eventSetCreate(id);
 		PapiException.throwOnError(rc, "creating event set");
 
-		rc = Wrapper.eventSetAddEvents(set.eventId[0], events);
+		rc = Wrapper.eventSetAddEvents(id[0], events);
 		PapiException.throwOnError(rc, "adding events to the set");
+		set.eventSetId = id[0];
 
 		return set;
 	}
@@ -51,48 +53,70 @@ public class EventSet {
 	}
 
 	public void destroy() {
-		int rc = Wrapper.eventSetDestroy(eventId[0]);
+		int rc = Wrapper.eventSetDestroy(eventSetId);
 		if (rc != Constants.PAPI_OK) {
 			throw new PapiRuntimeException(rc, "destroying event set");
 		}
 	}
 
 	public void start() throws PapiException {
-		int rc = Wrapper.eventSetStart(eventId[0]);
+		int rc = Wrapper.eventSetStart(eventSetId);
 		PapiException.throwOnError(rc, "starting event set");
 	}
 
 	/**
-	 * Stops a running event set, unless the event set wasn't running
+	 * Stops a running event set and reads performance counters
 	 *
-	 * @return Event set was not running, no new events
+	 * @return The event counters, or null if the event hadn't started yet
 	 */
-	public boolean stop() throws PapiException {
-		int rc = Wrapper.eventSetStop(eventId[0], counters);
-		if (rc == Constants.PAPI_ENOTRUN) {
-			return false;
-		} else if (rc == Constants.PAPI_OK) {
+	public long[] stop() throws PapiException {
+		long[] results = new long[this.events_nr];
+		int rc = Wrapper.eventSetStop(eventSetId, results);
+		if (rc == Constants.PAPI_OK) {
+			return results;
+		}
+		if (rc != Constants.PAPI_ENOTRUN) {
+			PapiException.throwOnError(rc, "stopping");
+		}
+		return null;
+	}
+
+	/**
+	 * Stops a running event set and reads the performance counters
+	 *
+	 * @param results The array to write the counters to
+	 * @return true if the event set had been running
+	 */
+	public boolean stopAndRead(long[] results) throws PapiException {
+		int rc = Wrapper.eventSetStop(eventSetId, results);
+		if (rc == Constants.PAPI_OK) {
 			return true;
 		}
-		PapiException.throwOnError(rc, "resetting events");
-		return true;
-	}
-
-	public long[] getCounters() {
-		return Arrays.copyOf(counters, counters.length);
-	}
-
-	public long getCounter(int index) {
-		return this.counters[index];
+		if (rc != Constants.PAPI_ENOTRUN) {
+			PapiException.throwOnError(rc, "stopping and reading");
+		}
+		return false;
 	}
 
 	public int size() {
-		return this.counters.length;
+		return this.events_nr;
 	}
 
-	public void addCountersTo(long[] dest) {
-		for (int i = 0; i < this.counters.length; ++i) {
-			dest[i] += this.counters[i];
-		}
+	/**
+	 * Zeroes the event counters
+	 */
+	public void reset() {
+		int rc = Wrapper.eventSetReset(this.eventSetId);
+		PapiException.throwOnError(rc, "resetting");
+	}
+
+	/**
+	 * Extracts the current counter values, adds them to the destination array, and zeroes the counter registers
+	 *
+	 * @param dest The destination array to add to
+	 */
+	public void addAndZero(long[] dest) {
+		int rc = Wrapper.eventSetAccum(this.eventSetId, dest);
+		PapiException.throwOnError(rc, "extracting, accumulating, and zeroing");
 	}
 }
