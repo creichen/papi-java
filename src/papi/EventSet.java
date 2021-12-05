@@ -62,9 +62,20 @@ public class EventSet {
 		PapiException.throwOnError(rc, "starting event set");
 	}
 
-	public void stop() throws PapiException {
+	/**
+	 * Stops a running event set, unless the event set wasn't running
+	 *
+	 * @return Event set was not running, no new events
+	 */
+	public boolean stop() throws PapiException {
 		int rc = Wrapper.eventSetStop(eventId[0], counters);
-		PapiException.throwOnError(rc, "stopping events");
+		if (rc == Constants.PAPI_ENOTRUN) {
+			return false;
+		} else if (rc == Constants.PAPI_OK) {
+			return true;
+		}
+		PapiException.throwOnError(rc, "resetting events");
+		return true;
 	}
 
 	public long[] getCounters() {
