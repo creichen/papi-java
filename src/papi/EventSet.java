@@ -32,11 +32,11 @@ import java.util.Arrays;
 
 public class EventSet {
 	private long eventSetId = 0;
-	private int events_nr;
+	private int eventsNr;
 
 	public static EventSet create(int... events) throws PapiException {
 		EventSet set = new EventSet();
-		set.events_nr = events.length;
+		set.eventsNr = events.length;
 
 		long id[] = new long[1];
 		int rc = Wrapper.eventSetCreate(id);
@@ -68,7 +68,7 @@ public class EventSet {
 	 * @return The event counters, or null if the event hadn't started yet
 	 */
 	public long[] stop() throws PapiException {
-		long[] results = new long[this.events_nr];
+		long[] results = new long[this.eventsNr];
 		int rc = Wrapper.eventSetStop(eventSetId, results);
 		if (rc == Constants.PAPI_OK) {
 			return results;
@@ -97,7 +97,7 @@ public class EventSet {
 	}
 
 	public int size() {
-		return this.events_nr;
+		return this.eventsNr;
 	}
 
 	/**
@@ -128,5 +128,11 @@ public class EventSet {
 	public void read(long[] dest) {
 		int rc = Wrapper.eventSetRead(this.eventSetId, dest);
 		PapiException.throwOnError(rc, "extracting, accumulating, and zeroing");
+	}
+
+	@Override
+	public String
+	toString() {
+		return "papi.EventSet<" + this.eventSetId + ">(#" + this.eventsNr + " events)";
 	}
 }
