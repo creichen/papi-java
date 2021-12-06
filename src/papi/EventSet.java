@@ -119,4 +119,16 @@ public class EventSet {
 		int rc = Wrapper.eventSetAccum(this.eventSetId, dest);
 		PapiException.throwOnError(rc, "extracting, accumulating, and zeroing");
 	}
+
+	/**
+	 * Extracts the current counter values
+	 *
+	 * The counters will keep running after this operation.
+	 *
+	 * @param dest The destination array to write to
+	 */
+	public void read(long[] dest) {
+		int rc = Wrapper.eventSetRead(this.eventSetId, dest);
+		PapiException.throwOnError(rc, "extracting, accumulating, and zeroing");
+	}
 }

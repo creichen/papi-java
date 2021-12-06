@@ -50,6 +50,12 @@ public class Demo {
 	}
     }
 
+    public static void sub(long[] dest, long[] src) {
+	for (int i = 0 ; i < dest.length; ++i) {
+	    dest[i] -= src[i];
+	}
+    }
+
     public static int[]
     initReflist(int offset) {
 	int[] reflist = new int[DEMO_SIZE];
@@ -217,6 +223,47 @@ public class Demo {
 	evset.destroy();
     }
 
+    public static void testRead() {
+	EventSet evset = EventSet.create(COUNTERS);
+	long[] total_counters = new long[2];
+	long[] start_counters = new long[2];
+	long[] stop_counters = new long[2];
+
+	evset.start();
+
+	// warmup runs before measuring
+	for (int warmup = 100; warmup >= 0; --warmup) {
+	    int[] reflist =  Demo.initReflist(warmup);
+
+	    evset.read(start_counters);
+
+	    int pos = 0;
+	    int count = 0;
+	    do {
+		++count;
+		if (count > DEMO_SIZE + 1) {
+		    break;
+		}
+		pos = reflist[pos];
+	    } while (pos != 0);
+
+	    if (count != DEMO_SIZE) {
+		throw new RuntimeException("Cache maze failed");
+	    }
+
+	    if (warmup < 4) {
+		evset.read(stop_counters);
+		sub(stop_counters, start_counters);
+		add(total_counters, stop_counters);
+	    }
+
+	    // only print the last run
+	    printIfDone(warmup, "read()", total_counters);
+	}
+	evset.stop();
+	evset.destroy();
+    }
+
     public static void printSupportedCounters() {
 	ArrayList<String> names = new ArrayList<>();
 	int failed = 0;
@@ -249,5 +296,6 @@ public class Demo {
 	testStopAndRead();
 	testAddAndZero();
 	testResetAddAndZero();
+	testRead();
     }
 }

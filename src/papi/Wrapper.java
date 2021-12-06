@@ -39,4 +39,5 @@ public class Wrapper {
 	public static native int eventSetStop(long eventSetId, long values[]);
 	public static native int eventSetReset(long eventSetId);
 	public static native int eventSetAccum(long eventSetId, long values[]);
+    	public static native int eventSetRead(long eventSetId, long values[]);
 }
