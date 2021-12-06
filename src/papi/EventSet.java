@@ -54,9 +54,7 @@ public class EventSet {
 
 	public void destroy() {
 		int rc = Wrapper.eventSetDestroy(eventSetId);
-		if (rc != Constants.PAPI_OK) {
-			throw new PapiRuntimeException(rc, "destroying event set");
-		}
+		PapiException.throwOnError(rc, "destroying event set");
 	}
 
 	public void start() throws PapiException {
