@@ -75,9 +75,8 @@ public class EventSetApiTest {
                 for (int i = 0; i < iterations; ++i) {
                         ev.reset();
                         ev.start();
-                        ev.stop();
 
-                        long[] readings = ev.getCounters();
+                        long[] readings = ev.stop();
                         counterValues[i] = readings[0];
                 }
 
