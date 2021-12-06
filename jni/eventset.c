@@ -52,7 +52,7 @@ JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetCreate
 	jlong *eventsetidoutj = (*env)->GetLongArrayElements(env, eventsetidoutarr, NULL);
 	long long *eventsetidout = (long long *) eventsetidoutj;
 	eventsetidout[0] = eventset;
-	(*env)->ReleaseLongArrayElements(env, eventsetidoutarr, eventsetidoutj, JNI_COMMIT);
+	(*env)->ReleaseLongArrayElements(env, eventsetidoutarr, eventsetidoutj, 0);
 
 	DEBUG_PRINT("new eventset is %d", eventset);
 
@@ -128,7 +128,7 @@ JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetStop
 	int rc = PAPI_stop(eventset, values);
 
 	if (rc == PAPI_OK) {
-		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_COMMIT);
+		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, 0);
 	} else {
 		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_ABORT);
 	}
@@ -168,7 +168,7 @@ JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetAccum
 	int rc = PAPI_accum(eventset, values);
 
 	if (rc == PAPI_OK) {
-		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_COMMIT);
+		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, 0);
 	} else {
 		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_ABORT);
 	}
@@ -198,7 +198,7 @@ JNIEXPORT jint JNICALL Java_papi_Wrapper_eventSetRead
 	int rc = PAPI_read(eventset, values);
 
 	if (rc == PAPI_OK) {
-		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_COMMIT);
+		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, 0);
 	} else {
 		(*env)->ReleaseLongArrayElements(env, valuesarr, valuesj, JNI_ABORT);
 	}
