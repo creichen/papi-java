@@ -35,6 +35,9 @@ public class EventSet {
 	private int eventsNr;
 
 	public static EventSet create(int... events) throws PapiException {
+                if (!Papi.isInit()) {
+                        throw new RuntimeException("Initialize PAPI first!");
+                }
 		EventSet set = new EventSet();
 		set.eventsNr = events.length;
 

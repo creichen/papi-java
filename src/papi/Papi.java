@@ -29,6 +29,12 @@
 package papi;
 
 public class Papi {
+        static boolean isInit = false;
+
+        public static boolean isInit() {
+                return isInit;
+        }
+
 	public static void init() {
 		System.loadLibrary("papi");
 		System.loadLibrary("papijava");
@@ -38,5 +44,6 @@ public class Papi {
 		if (ok != Constants.PAPI_VER_CURRENT) {
 			throw new PapiRuntimeException(ok, "Library initialization failed.");
 		}
+                isInit = true;
 	}
 }
