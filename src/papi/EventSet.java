@@ -34,6 +34,8 @@ public class EventSet {
 	private long eventSetId = 0;
 	private int eventsNr;
 
+        // public static boolean logCalls = false;
+
 	public static EventSet create(int... events) throws PapiException {
                 if (!Papi.isInit()) {
                         throw new RuntimeException("Initialize PAPI first!");
@@ -56,11 +58,13 @@ public class EventSet {
         }
 
 	public void destroy() {
+                // logUsage("destroy");
 		int rc = Wrapper.eventSetDestroy(eventSetId);
 		PapiException.throwOnError(rc, "destroying event set");
 	}
 
 	public void start() throws PapiException {
+                // logUsage("start");
 		int rc = Wrapper.eventSetStart(eventSetId);
 		PapiException.throwOnError(rc, "starting event set");
 	}
@@ -71,6 +75,7 @@ public class EventSet {
 	 * @return The event counters, or null if the event hadn't started yet
 	 */
 	public long[] stop() throws PapiException {
+                // logUsage("stop");
 		long[] results = new long[this.eventsNr];
 		int rc = Wrapper.eventSetStop(eventSetId, results);
 		if (rc == Constants.PAPI_OK) {
@@ -89,6 +94,7 @@ public class EventSet {
 	 * @return true if the event set had been running
 	 */
 	public boolean stopAndRead(long[] results) throws PapiException {
+                // logUsage("stopAndRead");
 		int rc = Wrapper.eventSetStop(eventSetId, results);
 		if (rc == Constants.PAPI_OK) {
 			return true;
@@ -107,6 +113,7 @@ public class EventSet {
 	 * Zeroes the event counters
 	 */
 	public void reset() {
+                // logUsage("reset");
 		int rc = Wrapper.eventSetReset(this.eventSetId);
 		PapiException.throwOnError(rc, "resetting");
 	}
@@ -129,6 +136,7 @@ public class EventSet {
 	 * @param dest The destination array to write to
 	 */
 	public void read(long[] dest) {
+                // logUsage("read");
 		int rc = Wrapper.eventSetRead(this.eventSetId, dest);
 		PapiException.throwOnError(rc, "extracting, accumulating, and zeroing");
 	}
@@ -138,4 +146,10 @@ public class EventSet {
 	toString() {
 		return "papi.EventSet<" + this.eventSetId + ">(#" + this.eventsNr + " events)";
 	}
+
+        // public void logUsage(String label) {
+        //         if (logCalls) {
+        //                 System.out.println("USAGE: " + label);
+        //         }
+        // }
 }
