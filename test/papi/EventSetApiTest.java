@@ -30,6 +30,7 @@ package papi;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 
@@ -40,17 +41,65 @@ public class EventSetApiTest {
 	}
 
 	@Test
-	public void nullArgumentForCreatingEventSetFails() {
+	public void
+	nullArgumentForCreatingEventSetFails() {
 		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
 	}
-	
+
 	@Test
-	public void emptyArrayArgumentForCreatingEventSetFails() {
+	public void
+	emptyArrayArgumentForCreatingEventSetFails() {
 		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
 	}
-	
+
 	@Test
-	public void tooBigArrayArgumentForCreatingEventSetFails() {
+	public void
+	tooBigArrayArgumentForCreatingEventSetFails() {
 		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
+	}
+
+	public static BigInteger
+	fib(int n) {
+		if (n == 0) {
+			return BigInteger.ZERO;
+		} else if (n == 1) {
+			return BigInteger.ONE;
+		}
+		return fib(n - 1).add(fib(n - 2));
+	}
+
+
+	@Test
+	public void
+	checkCyclesIncrement() throws PapiException {
+		EventSet evset = EventSet.create(Constants.PAPI_TOT_CYC);
+		long[] data = new long[1];
+		evset.start();
+
+		final BigInteger[] expected = new BigInteger[] {
+			BigInteger.valueOf(0l),
+			BigInteger.valueOf(1l),
+			BigInteger.valueOf(1l),
+			BigInteger.valueOf(2l),
+			BigInteger.valueOf(3l),
+			BigInteger.valueOf(5l),
+			BigInteger.valueOf(8l),
+			BigInteger.valueOf(13l)
+		};
+		long[] counts = new long[expected.length];
+
+		evset.start();
+		for (int i = 1; i < expected.length; ++i) {
+			assertEquals(fib(1), expected[i]);
+			evset.read(data);
+			counts[i] = data[0];
+		}
+
+		for (int i = 2; i < expected.length; ++i) {
+			assertTrue(counts[i - 1] < counts[1]);
+		}
+
+		long[] result = evset.stop();
+		assertTrue(counts[counts.length] < result[0]);
 	}
 }
