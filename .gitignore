@@ -1,0 +1,6 @@
+jni
+*.so
+*.jar
+src/papi/*.class
+src/papi/Constants.java
+test/papi/*.class

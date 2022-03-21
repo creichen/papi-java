@@ -35,70 +35,100 @@ import java.math.BigInteger;
 import static org.junit.Assert.*;
 
 public class EventSetApiTest {
-	@BeforeClass
-	public static void initialization() {
-		Papi.init();
-	}
+        @BeforeClass
+        public static void initialization() {
+                Papi.init();
+        }
 
-	@Test
-	public void
-	nullArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
-	}
+        @Test
+        public void nullArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
+        }
 
-	@Test
-	public void
-	emptyArrayArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
-	}
+        @Test
+        public void emptyArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
+        }
 
-	@Test
-	public void
-	tooBigArrayArgumentForCreatingEventSetFails() {
-		assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
-	}
+        @Test
+        public void tooBigArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
+        }
 
-	public static BigInteger
-	fib(int n) {
-		if (n == 0) {
-			return BigInteger.ZERO;
-		} else if (n == 1) {
-			return BigInteger.ONE;
-		}
-		return fib(n - 1).add(fib(n - 2));
-	}
+        @Test
+        public void testReset() {
+                EventSet ev = EventSet.create(Constants.PAPI_TOT_CYC);
+                ev.start();
+                ev.stop();
+                ev.reset();
+                ev.start();
+                ev.stop();
+        }
+
+        @BeforeClass
+        public static void initialization() {
+                Papi.init();
+        }
+
+        @Test
+        public void
+        nullArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(null));
+        }
+
+        @Test
+        public void
+        emptyArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[0]));
+        }
+
+        @Test
+        public void
+        tooBigArrayArgumentForCreatingEventSetFails() {
+                assertEquals(Constants.PAPI_EINVAL, Wrapper.eventSetCreate(new long[2]));
+        }
+
+        public static BigInteger
+        fib(int n) {
+                if (n == 0) {
+                        return BigInteger.ZERO;
+                } else if (n == 1) {
+                        return BigInteger.ONE;
+                }
+                return fib(n - 1).add(fib(n - 2));
+        }
 
 
-	@Test
-	public void
-	checkCyclesIncrement() throws PapiException {
-		EventSet evset = EventSet.create(Constants.PAPI_TOT_CYC);
-		long[] data = new long[1];
+        @Test
+        public void
+        checkCyclesIncrement() throws PapiException {
+                EventSet evset = EventSet.create(Constants.PAPI_TOT_CYC);
+                long[] data = new long[1];
 
-		final BigInteger[] expected = new BigInteger[] {
-			BigInteger.valueOf(0l),
-			BigInteger.valueOf(1l),
-			BigInteger.valueOf(1l),
-			BigInteger.valueOf(2l),
-			BigInteger.valueOf(3l),
-			BigInteger.valueOf(5l),
-			BigInteger.valueOf(8l),
-			BigInteger.valueOf(13l)
-		};
-		long[] counts = new long[expected.length];
+                final BigInteger[] expected = new BigInteger[] {
+                        BigInteger.valueOf(0l),
+                        BigInteger.valueOf(1l),
+                        BigInteger.valueOf(1l),
+                        BigInteger.valueOf(2l),
+                        BigInteger.valueOf(3l),
+                        BigInteger.valueOf(5l),
+                        BigInteger.valueOf(8l),
+                        BigInteger.valueOf(13l)
+                };
+                long[] counts = new long[expected.length];
 
-		evset.start();
-		for (int i = 1; i < expected.length; ++i) {
-			assertEquals(fib(i), expected[i]);
-			evset.read(data);
-			counts[i] = data[0];
-		}
+                evset.start();
+                for (int i = 1; i < expected.length; ++i) {
+                        assertEquals(fib(i), expected[i]);
+                        evset.read(data);
+                        counts[i] = data[0];
+                }
 
-		for (int i = 2; i < expected.length; ++i) {
-			assertTrue(counts[i - 1] < counts[i]);
-		}
+                for (int i = 2; i < expected.length; ++i) {
+                        assertTrue(counts[i - 1] < counts[i]);
+                }
 
-		long[] result = evset.stop();
-		assertTrue(counts[counts.length - 1] < result[0]);
-	}
+                long[] result = evset.stop();
+                assertTrue(counts[counts.length - 1] < result[0]);
+        }
 }
