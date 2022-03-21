@@ -74,7 +74,6 @@ public class EventSetApiTest {
 	checkCyclesIncrement() throws PapiException {
 		EventSet evset = EventSet.create(Constants.PAPI_TOT_CYC);
 		long[] data = new long[1];
-		evset.start();
 
 		final BigInteger[] expected = new BigInteger[] {
 			BigInteger.valueOf(0l),
@@ -90,16 +89,16 @@ public class EventSetApiTest {
 
 		evset.start();
 		for (int i = 1; i < expected.length; ++i) {
-			assertEquals(fib(1), expected[i]);
+			assertEquals(fib(i), expected[i]);
 			evset.read(data);
 			counts[i] = data[0];
 		}
 
 		for (int i = 2; i < expected.length; ++i) {
-			assertTrue(counts[i - 1] < counts[1]);
+			assertTrue(counts[i - 1] < counts[i]);
 		}
 
 		long[] result = evset.stop();
-		assertTrue(counts[counts.length] < result[0]);
+		assertTrue(counts[counts.length - 1] < result[0]);
 	}
 }
