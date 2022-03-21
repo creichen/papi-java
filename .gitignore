@@ -1,4 +1,9 @@
-jni
+jni/errors_list.c
+jni/events_list.c
+jni/*.o
+jni/genconst.bin
+jni/papi_Wrapper.h
+Makefile
 *.so
 *.jar
 src/papi/*.class
