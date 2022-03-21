@@ -29,13 +29,35 @@
 package papi;
 
 public class PapiException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 12361391L;
 
-	public PapiException(int rc, String reason) {
-		super(reason + " [error code = " + rc + "]");
-	}
+        public static final String UNKNOWN_PAPI_ERROR_MESSAGE = "<UNKNOWN>";
 
-        public static void throwOnError(int rc, String reason) throws PapiException {
+        private int papi_error_code;
+
+        public PapiException(final int rc, final String reason) {
+                super(reason + " [error code = " + rc + ", " + PapiException.papiErrorMessage(rc) + "]");
+        }
+
+        public int
+        getPapiErrorCode() {
+                return this.papi_error_code;
+        }
+
+        public static String
+        papiErrorMessage(final int papi_error_code) {
+                if (Constants.ERRORS.containsKey(papi_error_code)) {
+                        return Constants.ERRORS.get(papi_error_code);
+                }
+                return PapiException.UNKNOWN_PAPI_ERROR_MESSAGE;
+        }
+
+        public String
+        getPapiErrorMessage() {
+                return PapiException.papiErrorMessage(this.getPapiErrorCode());
+        }
+
+        public static void throwOnError(final int rc, final String reason) throws PapiException {
                 if (rc != Constants.PAPI_OK) {
                         throw new PapiException(rc, reason);
                 }
