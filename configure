@@ -52,6 +52,32 @@ if [ ! -e ${PAPI_PATH}/${PAPI_HEADER_FILE} ]; then
 fi
 
 # --------------------------------------------------------------------------------
+JNI_HEADER_FILE=include/jni.h
+echo "Checking for path to ${JNI_HEADER_FILE} from JNI (set JNI_INCLUDE_PATH to override)..."
+if [[ ${JNI_INCLUDE_PATH} != "" ]]; then
+    echo "- user override: using ${JNI_INCLUDE_PATH}"
+else
+    JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")
+    OPTIONS="${JAVA_HOME} / /usr /usr/local"
+    for P in ${OPTIONS} ; do
+	if [ -e ${P}/${JNI_HEADER_FILE} ]; then
+	    JNI_INCLUDE_PATH=${P}
+	    break
+	fi
+    done
+    if [[ ${JNI_INCLUDE_PATH} == "" ]]; then
+	echo "Not found in: ${OPTIONS}"
+	exit 1
+    fi
+    echo "- auto-detection: ${JNI_INCLUDE_PATH}"
+fi
+
+if [ ! -e ${JAVA_HOME}/${JNI_HEADER_FILE} ]; then
+    echo "Error: missing header file (missing JDK or wrong JAVA_HOME?): ${JAVA_HOME}"
+    exit 1
+fi
+
+# --------------------------------------------------------------------------------
 PAPI_LIB_FILE=libpapi.so
 echo "Checking for ${PAPI_LIB_FILE} relative to ${PAPI_PATH} (set PAPI_LIBRARY_PATH to override)..."
 if [[ ${PAPI_LIBRARY_PATH} != "" ]]; then
@@ -85,10 +111,11 @@ PAPI_PATH=`echo ${PAPI_PATH} | sed 's/\//\\\\\//g'`
 PAPI_LIBRARY_PATH=`echo ${PAPI_LIBRARY_PATH} | sed 's/\//\\\\\//g'`
 
 cat Makefile.template \
-    | sed s/%javah%/"${JAVAH}"/ \
-    | sed s/%javac%/"${JAVAC}"/ \
-    | sed s/%papi_path%/"${PAPI_PATH}"/ \
-    | sed s/%papi_library_path%/"${PAPI_LIBRARY_PATH}"/ \
+    | sed "s!%javah%!${JAVAH}!" \
+    | sed "s!%javac%!${JAVAC}!" \
+    | sed "s!%jni_include_path%!${JNI_INCLUDE_PATH}!" \
+    | sed "s!%papi_path%!${PAPI_PATH}!" \
+    | sed "s!%papi_library_path%!${PAPI_LIBRARY_PATH}!" \
     | cat > Makefile
 echo "Run 'make' to build"
 

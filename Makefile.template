@@ -33,7 +33,7 @@ GREP = grep
 AWK = awk
 
 CFLAGS = -Wall -Wextra -Werror #-DPAPIJAVA_DEBUG
-CFLAGS_JNI = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -fPIC
+CFLAGS_JNI = -I%jni_include_path%/include -I$(JAVA_HOME)/include/linux -fPIC
 LDFLAGS = -lpapi
 
 JAVA = java
