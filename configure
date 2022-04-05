@@ -32,7 +32,7 @@ echo "Checking for path to PAPI's ${PAPI_HEADER_FILE} (set PAPI_PATH to override
 if [[ ${PAPI_PATH} != "" ]]; then
     echo "- user override: using ${PAPI_PATH}"
 else
-    OPTIONS="/ /usr .."
+    OPTIONS="/ /usr /usr/local"
     for P in ${OPTIONS} ; do
 	if [ -e ${P}/${PAPI_HEADER_FILE} ]; then
 	    PAPI_PATH=${P}
