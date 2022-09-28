@@ -36,7 +36,7 @@ public class EventSet {
 
         // public static boolean logCalls = false;
 
-        public static EventSet create(int... events) throws PapiException {
+        public static synchronized EventSet create(int... events) throws PapiException {
                 if (!Papi.isInit()) {
                         throw new RuntimeException("Initialize PAPI first!");
                 }
